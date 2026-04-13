@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>TeamTrack</title>
+</head>
+<body>
+
+  <h1>TeamTrack</h1>
+
+  <!-- REGISTRO -->
+  <h2>Registro</h2>
+  <input id="nombre" placeholder="Nombre"><br>
+  <input id="email" placeholder="Email"><br>
+  <input id="password" placeholder="Password"><br>
+  <button onclick="register()">Registrar</button>
+
+  <!-- LOGIN -->
+  <h2>Login</h2>
+  <input id="emailLogin" placeholder="Email"><br>
+  <input id="passwordLogin" placeholder="Password"><br>
+  <button onclick="login()">Login</button>
+
+  <!-- TAREAS -->
+  <h2>Tareas</h2>
+  <button onclick="getTareas()">Ver tareas</button>
+  <ul id="lista"></ul>
+
+  <!-- CREAR TAREA -->
+  <h3>Crear tarea</h3>
+  <input id="titulo" placeholder="Título"><br>
+  <input id="descripcion" placeholder="Descripción"><br>
+  <button onclick="crearTarea()">Crear tarea</button>
+
+  <script>
+    let token = "";
+
+    async function register() {
+      const res = await fetch("http://localhost:3000/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          nombre: document.getElementById("nombre").value,
+          email: document.getElementById("email").value,
+          password: document.getElementById("password").value,
+          rol: "admin"
+        })
+      });
+
+      const data = await res.json();
+      alert("Registrado correctamente");
+      console.log(data);
+    }
+
+    async function login() {
+      const res = await fetch("http://localhost:3000/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: document.getElementById("emailLogin").value,
+          password: document.getElementById("passwordLogin").value
+        })
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.token) {
+        token = data.token;
+        alert("Login correcto");
+      } else {
+        alert("Credenciales incorrectas");
+      }
+
+      console.log(data);
+    }
+
+    async function getTareas() {
+      if (!token) {
+        alert("Debes iniciar sesión");
+        return;
+      }
+
+      const res = await fetch("http://localhost:3000/tareas", {
+        headers: {
+          "Authorization": "Bearer " + token
+        }
+      });
+
+      const data = await res.json();
+
+      const lista = document.getElementById("lista");
+      lista.innerHTML = "";
+
+      data.forEach(t => {
+        const li = document.createElement("li");
+        li.textContent = t.titulo + " - " + t.estado;
+        lista.appendChild(li);
+      });
+    }
+
+    async function crearTarea() {
+      if (!token) {
+        alert("Debes iniciar sesión");
+        return;
+      }
+
+      const res = await fetch("http://localhost:3000/tareas", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + token
+        },
+        body: JSON.stringify({
+          titulo: document.getElementById("titulo").value,
+          descripcion: document.getElementById("descripcion").value,
+          estado: "pendiente",
+          prioridad: "alta",
+          fechaLimite: new Date().toISOString(),
+          proyectoId: 1
+        })
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        alert("Tarea creada correctamente");
+      } else {
+        alert("Error al crear tarea");
+      }
+
+      console.log(data);
+    }
+  </script>
+
+</body>
+</html>
