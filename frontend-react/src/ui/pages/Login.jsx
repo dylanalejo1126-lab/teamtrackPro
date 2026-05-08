@@ -2,6 +2,8 @@ import { useState } from "react";
 
 import { useNavigate } from "react-router-dom";
 
+import toast from "react-hot-toast";
+
 import {
   login
 } from "../../application/services/auth.service";
@@ -16,32 +18,39 @@ function Login() {
 
   const handleLogin = async () => {
 
-    const data = await login({
-      email,
-      password
-    });
+    try {
 
-    if (data.token) {
+      const data = await login({
+        email,
+        password
+      });
 
-      // TOKEN
-      localStorage.setItem(
-        "token",
-        data.token
-      );
+      if (data.token) {
 
-      // USUARIO
-      localStorage.setItem(
-        "usuario",
-        JSON.stringify(data.usuario)
-      );
+    
+        localStorage.setItem(
+          "token",
+          data.token
+        );
 
-      navigate("/dashboard");
+        
+        localStorage.setItem(
+          "usuario",
+          JSON.stringify(data.usuario)
+        );
 
-    } else {
+        toast.success("Bienvenido a TeamTrack\n\nInicio de sesión exitoso.");
 
-      alert(
-        "Credenciales incorrectas"
-      );
+        navigate("/dashboard");
+
+      } else {
+
+        toast.error("Acceso denegado\n\nVerifica tus credenciales.");
+      }
+
+    } catch (error) {
+
+      toast.error("Error del sistema\n\nNo se pudo iniciar sesión.");
     }
   };
 
@@ -99,7 +108,10 @@ function Login() {
           style={{
             width: "100%",
             padding: "10px",
-            marginTop: "10px"
+            marginTop: "10px",
+            borderRadius: "6px",
+            border: "1px solid #cbd5e1",
+            outline: "none"
           }}
         />
 
@@ -113,7 +125,10 @@ function Login() {
           style={{
             width: "100%",
             padding: "10px",
-            marginTop: "10px"
+            marginTop: "10px",
+            borderRadius: "6px",
+            border: "1px solid #cbd5e1",
+            outline: "none"
           }}
         />
 
@@ -128,7 +143,8 @@ function Login() {
             border: "none",
             borderRadius: "6px",
             cursor: "pointer",
-            fontWeight: "bold"
+            fontWeight: "bold",
+            transition: "0.2s"
           }}
         >
           Iniciar sesión
@@ -141,10 +157,12 @@ function Login() {
           style={{
             marginTop: "15px",
             color: "#2563eb",
-            cursor: "pointer"
+            cursor: "pointer",
+            fontWeight: "500"
           }}
         >
           ¿No tienes cuenta?
+          {" "}
           Regístrate
         </p>
 

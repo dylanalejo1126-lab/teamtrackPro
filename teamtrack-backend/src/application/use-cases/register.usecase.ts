@@ -12,13 +12,13 @@ export class Register {
 
   async ejecutar(data: any) {
 
-    // HASH PASSWORD
+    
     const hashedPassword = await bcrypt.hash(
       data.password,
       10
     );
 
-    // CREAR EQUIPO AUTOMÁTICO
+    
     const equipo = await prisma.equipo.create({
       data: {
         nombre: `${data.nombre} Team`,
@@ -26,7 +26,7 @@ export class Register {
       }
     });
 
-    // CREAR ADMIN
+    
     return this.repo.crear({
 
       nombre: data.nombre,

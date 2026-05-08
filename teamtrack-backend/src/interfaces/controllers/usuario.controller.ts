@@ -55,7 +55,7 @@ export const crearUsuario = async (
 
     const admin = (req as any).usuario;
 
-    // SOLO ADMINS
+    
     if (admin.rol !== "admin") {
 
       return res.status(403).json({

@@ -27,17 +27,17 @@ function Dashboard() {
   const [usuarios, setUsuarios] = useState([]);
   const [proyectos, setProyectos] = useState([]);
 
-  // TAREAS
+ 
   const [titulo, setTitulo] = useState("");
   const [descripcion, setDescripcion] = useState("");
   const [usuarioId, setUsuarioId] = useState("");
   const [proyectoId, setProyectoId] = useState("");
 
-  // PROYECTOS
+  
   const [nombreProyecto, setNombreProyecto] = useState("");
   const [descripcionProyecto, setDescripcionProyecto] = useState("");
 
-  // EMPLEADOS
+ 
   const [nombreUsuario, setNombreUsuario] = useState("");
   const [emailUsuario, setEmailUsuario] = useState("");
   const [passwordUsuario, setPasswordUsuario] = useState("");
@@ -46,12 +46,12 @@ function Dashboard() {
 
   const token = localStorage.getItem("token");
 
-  // USUARIO LOGUEADO
+  
   const usuario = JSON.parse(
     localStorage.getItem("usuario")
   );
 
-  // PROGRESO
+  
   const tareasCompletadas = tareas.filter(
     (t) => t.estado === "completada"
   ).length;
@@ -62,7 +62,7 @@ function Dashboard() {
       )
     : 0;
 
-  // COLUMNAS
+  
   const pendientes = tareas.filter(
     (t) => t.estado === "pendiente"
   );
@@ -75,7 +75,7 @@ function Dashboard() {
     (t) => t.estado === "completada"
   );
 
-  // CARGAR DATOS
+  
   const cargarDatos = async () => {
 
     const tareasData = await obtenerTareas(token);
@@ -87,7 +87,7 @@ function Dashboard() {
     setProyectos(proyectosData);
   };
 
-  // CREAR PROYECTO
+  
   const handleCrearProyecto = async () => {
 
     await crearProyecto({
@@ -105,7 +105,7 @@ function Dashboard() {
     cargarDatos();
   };
 
-  // CREAR EMPLEADO
+  
   const handleCrearUsuario = async () => {
 
     await crearUsuario(
@@ -124,7 +124,7 @@ function Dashboard() {
     cargarDatos();
   };
 
-  // CREAR TAREA
+  
   const handleCrearTarea = async () => {
 
     await crearTarea({
@@ -145,7 +145,7 @@ function Dashboard() {
     cargarDatos();
   };
 
-  // CAMBIAR ESTADO
+
   const cambiarEstado = async (
     id,
     nuevoEstado
@@ -162,7 +162,7 @@ function Dashboard() {
     cargarDatos();
   };
 
-  // LOGOUT
+
   const logout = () => {
 
     localStorage.removeItem("token");
@@ -994,7 +994,7 @@ function Dashboard() {
   );
 }
 
-// ESTILOS
+
 const menuBtn = {
   background: "rgba(255,255,255,0.1)",
   border: "none",
