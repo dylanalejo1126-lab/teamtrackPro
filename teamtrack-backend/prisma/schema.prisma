@@ -7,14 +7,26 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Usuario {
-  id        Int      @id @default(autoincrement())
-  nombre    String
-  email     String   @unique
-  password  String
-  rol       String
+model Equipo {
+  id          Int        @id @default(autoincrement())
+  nombre      String
+  descripcion String?
 
-  tareas    Tarea[]
+  usuarios    Usuario[]
+  proyectos   Proyecto[]
+}
+
+model Usuario {
+  id         Int      @id @default(autoincrement())
+  nombre     String
+  email      String   @unique
+  password   String
+  rol        String
+
+  equipoId   Int
+  equipo     Equipo   @relation(fields: [equipoId], references: [id])
+
+  tareas     Tarea[]
 }
 
 model Proyecto {
@@ -23,6 +35,9 @@ model Proyecto {
   descripcion  String
   fechaInicio  DateTime
   fechaFin     DateTime
+
+  equipoId     Int
+  equipo       Equipo   @relation(fields: [equipoId], references: [id])
 
   tareas       Tarea[]
 }
