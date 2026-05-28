@@ -4,7 +4,8 @@ import { useNavigate } from "react-router-dom";
 import {
   obtenerTareas,
   crearTarea,
-  actualizarTarea
+  actualizarTarea,
+  eliminarTarea
 } from "../../application/services/tarea.service";
 
 import {
@@ -16,6 +17,12 @@ import {
   obtenerProyectos,
   crearProyecto
 } from "../../application/services/proyecto.service";
+
+import {
+  DragDropContext,
+  Droppable,
+  Draggable
+} from "@hello-pangea/dnd";
 
 function Dashboard() {
 
@@ -41,6 +48,14 @@ function Dashboard() {
   const [nombreUsuario, setNombreUsuario] = useState("");
   const [emailUsuario, setEmailUsuario] = useState("");
   const [passwordUsuario, setPasswordUsuario] = useState("");
+
+  const [mostrarModalEditar, setMostrarModalEditar] = useState(false);
+
+  const [tareaEditando, setTareaEditando] = useState(null);
+
+  const [editarTitulo, setEditarTitulo] = useState("");
+
+  const [editarDescripcion, setEditarDescripcion] = useState("");
 
   const navigate = useNavigate();
 
@@ -161,6 +176,75 @@ function Dashboard() {
 
     cargarDatos();
   };
+
+  const onDragEnd = async (result) => {
+
+  if (!result.destination) return;
+
+  const tareaId = Number(result.draggableId);
+
+  const nuevoEstado =
+    result.destination.droppableId;
+
+  await actualizarTarea(
+
+    tareaId,
+
+    {
+      estado: nuevoEstado
+    },
+
+    token
+  );
+
+  cargarDatos();
+};
+  
+  const handleEliminarTarea = async (id) => {
+
+  const confirmar = window.confirm(
+    "¿Eliminar esta tarea?"
+  );
+
+  if (!confirmar) return;
+
+  await eliminarTarea(id, token);
+
+  cargarDatos();
+};
+
+const abrirEditarTarea = (tarea) => {
+
+  setTareaEditando(tarea);
+
+  setEditarTitulo(tarea.titulo);
+
+  setEditarDescripcion(
+    tarea.descripcion
+  );
+
+  setMostrarModalEditar(true);
+};
+
+
+const guardarEdicionTarea = async () => {
+
+  await actualizarTarea(
+
+    tareaEditando.id,
+
+    {
+      titulo: editarTitulo,
+      descripcion: editarDescripcion
+    },
+
+    token
+  );
+
+  setMostrarModalEditar(false);
+
+  cargarDatos();
+};
 
 
   const logout = () => {
@@ -676,113 +760,224 @@ function Dashboard() {
 
             )}
 
-            {/* KANBAN */}
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(3,1fr)",
-                gap: "20px"
-              }}
-            >
+{/* KANBAN */}
+<DragDropContext onDragEnd={onDragEnd}>
 
-              {/* PENDIENTES */}
-              <div style={kanbanColumn}>
+  <div
+    style={{
+      display: "grid",
+      gridTemplateColumns: "repeat(3,1fr)",
+      gap: "20px"
+    }}
+  >
 
-                <h3 style={{ color: "#f59e0b" }}>
-                  Pendiente
-                </h3>
+{/* PENDIENTES */}
+<div style={kanbanColumn}>
 
-                {pendientes.map((t) => (
+  <h3 style={{ color: "#f59e0b" }}>
+    Pendiente
+  </h3>
 
-                  <div key={t.id} style={taskCard}>
+  {pendientes.map((t) => (
 
-                    <h4>{t.titulo}</h4>
+    <div key={t.id} style={taskCard}>
 
-                    <p style={{ color: "#64748b" }}>
-                      {t.descripcion}
-                    </p>
+      <h4>{t.titulo}</h4>
 
-                    <button
-                      onClick={() =>
-                        cambiarEstado(
-                          t.id,
-                          "en progreso"
-                        )
-                      }
-                      style={smallButton}
-                    >
-                      Pasar a progreso
-                    </button>
+      <p style={{ color: "#64748b" }}>
+        {t.descripcion}
+      </p>
 
-                  </div>
+      <div
+        style={{
+          display: "flex",
+          gap: "10px",
+          marginTop: "10px",
+          flexWrap: "wrap"
+        }}
+      >
 
-                ))}
+        <button
+          onClick={() =>
+            cambiarEstado(
+              t.id,
+              "en progreso"
+            )
+          }
+          style={smallButton}
+        >
+          Pasar a progreso
+        </button>
+
+        <button
+          onClick={() =>
+            handleEliminarTarea(t.id)
+          }
+          style={{
+            ...smallButton,
+            background: "#ef4444"
+          }}
+        >
+          Eliminar
+        </button>
+
+        <button
+          onClick={() =>
+            abrirEditarTarea(t)
+          }
+          style={{
+            ...smallButton,
+            background: "#f59e0b"
+          }}
+        >
+          Editar
+        </button>
+
+      </div>
+
+    </div>
+
+  ))}
 
               </div>
 
               {/* EN PROGRESO */}
-              <div style={kanbanColumn}>
+<div style={kanbanColumn}>
 
-                <h3 style={{ color: "#2563eb" }}>
-                  En progreso
-                </h3>
+  <h3 style={{ color: "#2563eb" }}>
+    En progreso
+  </h3>
 
-                {progresoTareas.map((t) => (
+  {progresoTareas.map((t) => (
 
-                  <div key={t.id} style={taskCard}>
+    <div key={t.id} style={taskCard}>
 
-                    <h4>{t.titulo}</h4>
+      <h4>{t.titulo}</h4>
 
-                    <p style={{ color: "#64748b" }}>
-                      {t.descripcion}
-                    </p>
+      <p style={{ color: "#64748b" }}>
+        {t.descripcion}
+      </p>
 
-                    <button
-                      onClick={() =>
-                        cambiarEstado(
-                          t.id,
-                          "completada"
-                        )
-                      }
-                      style={smallButton}
-                    >
-                      Completar
-                    </button>
+      <div
+        style={{
+          display: "flex",
+          gap: "10px",
+          marginTop: "10px",
+          flexWrap: "wrap"
+        }}
+      >
 
-                  </div>
+        <button
+          onClick={() =>
+            cambiarEstado(
+              t.id,
+              "completada"
+            )
+          }
+          style={smallButton}
+        >
+          Completar
+        </button>
 
-                ))}
+        <button
+          onClick={() =>
+            handleEliminarTarea(t.id)
+          }
+          style={{
+            ...smallButton,
+            background: "#ef4444"
+          }}
+        >
+          Eliminar
+        </button>
 
-              </div>
+        <button
+          onClick={() =>
+            abrirEditarTarea(t)
+          }
+          style={{
+            ...smallButton,
+            background: "#f59e0b"
+          }}
+        >
+          Editar
+        </button>
 
-              {/* COMPLETADAS */}
-              <div style={kanbanColumn}>
+      </div>
 
-                <h3 style={{ color: "#22c55e" }}>
-                  Completadas
-                </h3>
+    </div>
 
-                {completadas.map((t) => (
+  ))}
 
-                  <div key={t.id} style={taskCard}>
+</div>
 
-                    <h4>{t.titulo}</h4>
+{/* COMPLETADAS */}
+<div style={kanbanColumn}>
 
-                    <p style={{ color: "#64748b" }}>
-                      {t.descripcion}
-                    </p>
+  <h3 style={{ color: "#22c55e" }}>
+    Completadas
+  </h3>
 
-                  </div>
+  {completadas.map((t) => (
 
-                ))}
+    <div key={t.id} style={taskCard}>
 
-              </div>
+      <h4>{t.titulo}</h4>
 
-            </div>
+      <p style={{ color: "#64748b" }}>
+        {t.descripcion}
+      </p>
 
-          </div>
+      <div
+        style={{
+          display: "flex",
+          gap: "10px",
+          marginTop: "10px",
+          flexWrap: "wrap"
+        }}
+      >
 
-        )}
+        <button
+          onClick={() =>
+            handleEliminarTarea(t.id)
+          }
+          style={{
+            ...smallButton,
+            background: "#ef4444"
+          }}
+        >
+          Eliminar
+        </button>
+
+        <button
+          onClick={() =>
+            abrirEditarTarea(t)
+          }
+          style={{
+            ...smallButton,
+            background: "#f59e0b"
+          }}
+        >
+          Editar
+        </button>
+
+      </div>
+
+    </div>
+
+  ))}
+
+</div>
+
+  </div>
+
+</DragDropContext>
+
+</div>
+
+)}
+
+        
 
         {/* USUARIOS */}
         {vista === "usuarios" && usuario?.rol === "admin" && (
@@ -907,6 +1102,88 @@ function Dashboard() {
 
       </main>
 
+||||||{/* MODAL EDITAR TAREA */}
+{mostrarModalEditar && (
+
+  <div
+    style={{
+      position: "fixed",
+      inset: 0,
+      background: "rgba(0,0,0,0.4)",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      zIndex: 1000
+    }}
+  >
+
+    <div
+      style={{
+        background: "white",
+        width: "450px",
+        padding: "30px",
+        borderRadius: "20px"
+      }}
+    >
+
+      <h2 style={{ color: "#0f172a" }}>
+        Editar tarea
+      </h2>
+
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: "15px",
+          marginTop: "20px"
+        }}
+      >
+
+        <input
+          placeholder="Título"
+          value={editarTitulo}
+          onChange={(e) =>
+            setEditarTitulo(e.target.value)
+          }
+          style={inputStyle}
+        />
+
+        <input
+          placeholder="Descripción"
+          value={editarDescripcion}
+          onChange={(e) =>
+            setEditarDescripcion(e.target.value)
+          }
+          style={inputStyle}
+        />
+
+        <button
+          onClick={guardarEdicionTarea}
+          style={gradientButton}
+        >
+          Guardar cambios
+        </button>
+
+        <button
+          onClick={() =>
+            setMostrarModalEditar(false)
+          }
+          style={{
+            ...menuBtn,
+            color: "#0f172a",
+            background: "#e2e8f0"
+          }}
+        >
+          Cancelar
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+)}
       {/* MODAL PROYECTO */}
       {mostrarModalProyecto && usuario?.rol === "admin" && (
 

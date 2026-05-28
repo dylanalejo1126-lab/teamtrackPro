@@ -18,6 +18,30 @@ function Login() {
 
   const handleLogin = async () => {
 
+    if (
+      !email.trim() ||
+      !password.trim()
+    ) {
+
+      toast.error(
+        "Todos los campos son obligatorios"
+      );
+
+      return;
+    }
+
+    const emailRegex =
+      /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailRegex.test(email)) {
+
+      toast.error(
+        "Ingresa un correo válido"
+      );
+
+      return;
+    }
+
     try {
 
       const data = await login({
@@ -27,30 +51,34 @@ function Login() {
 
       if (data.token) {
 
-    
         localStorage.setItem(
           "token",
           data.token
         );
 
-        
         localStorage.setItem(
           "usuario",
           JSON.stringify(data.usuario)
         );
 
-        toast.success("Bienvenido a TeamTrack\n\nInicio de sesión exitoso.");
+        toast.success(
+          "Bienvenido a TeamTrack"
+        );
 
         navigate("/dashboard");
 
       } else {
 
-        toast.error("Acceso denegado\n\nVerifica tus credenciales.");
+        toast.error(
+          "Verifica tus credenciales"
+        );
       }
 
     } catch (error) {
 
-      toast.error("Error del sistema\n\nNo se pudo iniciar sesión.");
+      toast.error(
+        "No se pudo iniciar sesión"
+      );
     }
   };
 
@@ -100,7 +128,8 @@ function Login() {
         </h2>
 
         <input
-          placeholder="Email"
+          type="email"
+          placeholder="Correo electrónico"
           value={email}
           onChange={(e) =>
             setEmail(e.target.value)
@@ -117,7 +146,7 @@ function Login() {
 
         <input
           type="password"
-          placeholder="Password"
+          placeholder="Contraseña"
           value={password}
           onChange={(e) =>
             setPassword(e.target.value)

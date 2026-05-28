@@ -18,6 +18,40 @@ function Register() {
 
   const handleRegister = async () => {
 
+    if (
+      !nombre.trim() ||
+      !email.trim() ||
+      !password.trim()
+    ) {
+
+      toast.error(
+        "Todos los campos son obligatorios"
+      );
+
+      return;
+    }
+
+    const emailRegex =
+      /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailRegex.test(email)) {
+
+      toast.error(
+        "Ingresa un correo válido"
+      );
+
+      return;
+    }
+
+    if (password.length < 6) {
+
+      toast.error(
+        "La contraseña debe tener mínimo 6 caracteres"
+      );
+
+      return;
+    }
+
     try {
 
       await register({
@@ -103,7 +137,8 @@ function Register() {
         />
 
         <input
-          placeholder="Email"
+          type="email"
+          placeholder="Correo electrónico"
           value={email}
           onChange={(e) =>
             setEmail(e.target.value)
@@ -120,7 +155,7 @@ function Register() {
 
         <input
           type="password"
-          placeholder="Password"
+          placeholder="Contraseña"
           value={password}
           onChange={(e) =>
             setPassword(e.target.value)
