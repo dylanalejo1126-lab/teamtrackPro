@@ -103,6 +103,8 @@ const totalCompletadas = completadas.length;
   const cargarDatos = async () => {
 
     const tareasData = await obtenerTareas(token);
+    console.log(tareasData);
+    
     const usuariosData = await obtenerUsuarios(token);
     const proyectosData = await obtenerProyectos(token);
 
@@ -113,6 +115,18 @@ const totalCompletadas = completadas.length;
 
   
   const handleCrearProyecto = async () => {
+
+    if (
+  !nombreProyecto.trim() ||
+  !descripcionProyecto.trim()
+) {
+
+  alert(
+    "Completa todos los campos"
+  );
+
+  return;
+}
 
     await crearProyecto({
       nombre: nombreProyecto,
@@ -184,6 +198,20 @@ const handleCrearUsuario = async () => {
 
   
   const handleCrearTarea = async () => {
+if (
+  !titulo.trim() ||
+  !descripcion.trim() ||
+  !usuarioId ||
+  !proyectoId ||
+  !fechaLimite
+) {
+
+  alert(
+    "Debes completar todos los campos"
+  );
+
+  return;
+}
 
     await crearTarea({
       titulo,
@@ -936,11 +964,52 @@ const guardarEdicionTarea = async () => {
     : "🟢 Baja"}
 </div>
 
+<p
+  style={{
+    color: "#2563eb",
+    fontWeight: "bold",
+    marginBottom: "8px"
+  }}
+>
+  👤 {
+    usuarios.find(
+      (u) => u.id === t.usuarioId
+    )?.nombre || "Sin asignar"
+  }
+</p>
               <h4>{t.titulo}</h4>
 
               <p style={{ color: "#64748b" }}>
                 {t.descripcion}
               </p>
+              <p
+  style={{
+    color: "#475569",
+    fontSize: "14px",
+    marginTop: "8px"
+  }}
+>
+  📅 Vence: {" "}
+  {new Date(t.fechaLimite) < new Date() &&
+ t.estado !== "completada" && (
+  <div
+    style={{
+      background: "#fee2e2",
+      color: "#dc2626",
+      padding: "6px 10px",
+      borderRadius: "8px",
+      marginTop: "8px",
+      fontWeight: "bold",
+      width: "fit-content"
+    }}
+  >
+    🔴 Vencida
+  </div>
+)}
+  {new Date(
+    t.fechaLimite
+  ).toLocaleDateString()}
+</p>
 
               <div
                 style={{
@@ -1069,11 +1138,54 @@ const guardarEdicionTarea = async () => {
     ? "🟡 Media"
     : "🟢 Baja"}
 </div>
+
+<p
+  style={{
+    color: "#2563eb",
+    fontWeight: "bold",
+    marginBottom: "8px"
+  }}
+>
+  👤 {
+    usuarios.find(
+      (u) => u.id === t.usuarioId
+    )?.nombre || "Sin asignar"
+  }
+</p>
               <h4>{t.titulo}</h4>
 
               <p style={{ color: "#64748b" }}>
                 {t.descripcion}
               </p>
+
+<p
+  style={{
+    color: "#475569",
+    fontSize: "14px",
+    marginTop: "8px"
+  }}
+>
+  📅 Vence: {" "}
+  {new Date(t.fechaLimite) < new Date() &&
+ t.estado !== "completada" && (
+  <div
+    style={{
+      background: "#fee2e2",
+      color: "#dc2626",
+      padding: "6px 10px",
+      borderRadius: "8px",
+      marginTop: "8px",
+      fontWeight: "bold",
+      width: "fit-content"
+    }}
+  >
+    🔴 Vencida
+  </div>
+)}
+  {new Date(
+    t.fechaLimite
+  ).toLocaleDateString()}
+</p>
 
               <div
                 style={{
@@ -1201,11 +1313,54 @@ const guardarEdicionTarea = async () => {
     ? "🟡 Media"
     : "🟢 Baja"}
 </div>
+<p
+  style={{
+    color: "#2563eb",
+    fontWeight: "bold",
+    marginBottom: "8px"
+  }}
+>
+  👤 {
+    usuarios.find(
+      (u) => u.id === t.usuarioId
+    )?.nombre || "Sin asignar"
+  }
+</p>
+
               <h4>{t.titulo}</h4>
 
               <p style={{ color: "#64748b" }}>
                 {t.descripcion}
               </p>
+
+<p
+  style={{
+    color: "#475569",
+    fontSize: "14px",
+    marginTop: "8px"
+  }}
+>
+  📅 Vence: {" "}
+  {new Date(t.fechaLimite) < new Date() &&
+ t.estado !== "completada" && (
+  <div
+    style={{
+      background: "#fee2e2",
+      color: "#dc2626",
+      padding: "6px 10px",
+      borderRadius: "8px",
+      marginTop: "8px",
+      fontWeight: "bold",
+      width: "fit-content"
+    }}
+  >
+    🔴 Vencida
+  </div>
+)}
+  {new Date(
+    t.fechaLimite
+  ).toLocaleDateString()}
+</p>
 
               <div
                 style={{
